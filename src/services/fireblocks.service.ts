@@ -143,23 +143,22 @@ export class FireblocksService {
   }
 
   generateSymbol(property: Property): string {
-    const cleanTitle = property.title
-      .replace(/[0-9]/g, '')
-      .replace(/\s+/g, '')
-      .toUpperCase();
+    const cleanTitle = property.title.replace(/\s+/g, '').toUpperCase();
     const cleanLocation = property.location
-      .replace(/[0-9]/g, '')
       .replace(/[\s,]+/g, '')
       .toUpperCase();
 
-    const titleSegment = cleanTitle.substring(0, 3);
+    const titleSegment = cleanTitle.substring(0, 4);
     const locationSegment = cleanLocation.substring(0, 3);
 
-    const randomLetters = Array.from({ length: 2 }, () =>
-      String.fromCharCode(65 + Math.floor(Math.random() * 26)),
-    ).join('');
+    const idSegment = property.id
+      .replace(/[^A-Z0-9]/gi, '')
+      .substring(0, 4)
+      .toUpperCase();
 
-    return `${titleSegment}${locationSegment}${randomLetters}`;
+    const randomNumber = Math.floor(100 + Math.random() * 900); // 100–999
+
+    return `${titleSegment}${locationSegment}${idSegment}${randomNumber}`;
   }
 
   async createFungibleKycToken(property: Property) {
