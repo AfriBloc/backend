@@ -183,6 +183,14 @@ export class Property {
   @Column({ name: 'token_id', type: 'varchar', length: 255, nullable: true })
   tokenId: string | null;
 
+  @Column({
+    name: 'token_symbol',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  tokenSymbol: string | null;
+
   @OneToMany(() => PortfolioItem, (item) => item.property)
   portfolioItems: PortfolioItem[];
 

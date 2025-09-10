@@ -22,11 +22,11 @@ export class PropertyCreationListener {
       this.logger.log(
         `Handling property creation event for property ID: ${event.id}`,
       );
-      const tokenId =
-        await this.fireblocksService.createFungibleKycToken(event);
-      this.logger.log(`Successfully created token with ID: ${tokenId}`);
+      const data = await this.fireblocksService.createFungibleKycToken(event);
+      this.logger.log(`Successfully created token with ID: ${data.tokenId}`);
 
-      event.tokenId = tokenId;
+      event.tokenId = data.tokenId;
+      event.tokenSymbol = data.symbol;
       await this.propertyRepo.save(event);
     } catch (error) {
       this.logger.error('Error handling property creation event:', error);

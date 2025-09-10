@@ -143,9 +143,23 @@ export class FireblocksService {
   }
 
   generateSymbol(property: Property): string {
-    const title = property.title.replace(/\s+/g, '').toUpperCase();
-    const idSegment = property.id.split('-')[0].toUpperCase();
-    return `${title.substring(0, 5)}${idSegment}`;
+    const cleanTitle = property.title
+      .replace(/[0-9]/g, '')
+      .replace(/\s+/g, '')
+      .toUpperCase();
+    const cleanLocation = property.location
+      .replace(/[0-9]/g, '')
+      .replace(/[\s,]+/g, '')
+      .toUpperCase();
+
+    const titleSegment = cleanTitle.substring(0, 3);
+    const locationSegment = cleanLocation.substring(0, 3);
+
+    const randomLetters = Array.from({ length: 2 }, () =>
+      String.fromCharCode(65 + Math.floor(Math.random() * 26)),
+    ).join('');
+
+    return `${titleSegment}${locationSegment}${randomLetters}`;
   }
 
   async createFungibleKycToken(property: Property) {
@@ -156,10 +170,11 @@ export class FireblocksService {
     const kycKey = PrivateKey.fromStringECDSA(this.config.adminKey);
     const freezeKey = PrivateKey.fromStringECDSA(this.config.adminKey);
     const adminKey = PrivateKey.fromStringECDSA(this.config.adminKey);
+    const symbol = this.generateSymbol(property);
 
     const tx = new TokenCreateTransaction()
       .setTokenName(`${property.title}`)
-      .setTokenSymbol(this.generateSymbol(property))
+      .setTokenSymbol(symbol)
       .setDecimals(8)
       .setInitialSupply(1000 * 1e8)
       .setMaxSupply(1000 * 1e8)
@@ -181,6 +196,6 @@ export class FireblocksService {
       );
     }
 
-    return receipt?.tokenId.toString();
+    return { tokenId: receipt?.tokenId.toString(), symbol };
   }
 }
