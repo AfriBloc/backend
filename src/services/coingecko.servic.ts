@@ -12,7 +12,7 @@ export class CoingeckoService {
   ): Promise<string> {
     const baseUrl = 'https://api.coingecko.com/api/v3';
 
-    const url = `${baseUrl}/simple/price?ids=${fromAsset}&vs_currencies=${toCurrency}`;
+    const url = `${baseUrl}/simple/price?ids=${fromAsset}&vs_currencies=${toCurrency}&x_cg_demo_api_key=${process.env.COINGECKO_API_KEY}`;
 
     try {
       const response = await firstValueFrom(this.httpService.get(url));
@@ -20,6 +20,7 @@ export class CoingeckoService {
       const price = response.data[fromAsset][toCurrency];
       return price;
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(
         `Failed to fetch rate from CoinGecko: ${error.message}`,
       );
