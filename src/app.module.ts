@@ -75,6 +75,7 @@ import { CoingeckoService } from './services/coingecko.servic';
         type: 'postgres',
         host: configService.get('database.host'),
         port: +configService.get('database.port'),
+        url: configService.get('database.url') as string,
         username: configService.get('database.username'),
         password: configService.get('database.password'),
         database: configService.get('database.database'),

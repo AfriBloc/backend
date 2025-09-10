@@ -8,6 +8,7 @@ export const env = process.env;
 export const config = {
   type: 'postgres',
   host: env.DATABASE_HOST ?? '127.0.0.1',
+  url: env.DATABASE_URL,
   port: env.DATABASE_PORT ? parseInt(env.DATABASE_PORT, 10) : 5432,
   synchronize: env.APP_ENV === 'development',
   logging: env.APP_ENV === 'development' ? 'all' : ['error'],
