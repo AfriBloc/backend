@@ -16,5 +16,6 @@ export const config = {
   database: env.DATABASE_NAME,
   entities: ['dist/**/*.entity{.ts,.js}'],
   migrations: ['dist/database/migrations/*{.ts,.js}'],
+  sslmode: env.APP_ENV === 'development' ? 'disable' : 'require',
 };
 export const dataSource = new DataSource(config as DataSourceOptions);

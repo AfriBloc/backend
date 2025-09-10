@@ -57,6 +57,9 @@ import { FireblocksService } from './services/fireblocks.service';
 import { UserWallet } from './entities/user-wallet.entity';
 import { WalletController } from './controllers/wallet.controller';
 import { PropertyCreationListener } from './listeners/property-creation.listener';
+import { RateController } from './controllers/rate.controller';
+import { RateService } from './services/rate.service';
+import { CoingeckoService } from './services/coingecko.servic';
 
 @Module({
   imports: [
@@ -80,6 +83,8 @@ import { PropertyCreationListener } from './listeners/property-creation.listener
         migrations: ['dist/migrations/*{.ts,.js}'],
         logging: configService.get('env') === 'development' ? 'all' : ['error'],
         entities: [join(__dirname, '**/*.entity{.ts,.js}')],
+        sslmode:
+          configService.get('env') === 'development' ? 'disable' : 'require',
       }),
       inject: [ConfigService],
     }),
@@ -132,6 +137,7 @@ import { PropertyCreationListener } from './listeners/property-creation.listener
     KycController,
     PropertiesController,
     WalletController,
+    RateController,
   ],
   providers: [
     AppService,
@@ -151,6 +157,8 @@ import { PropertyCreationListener } from './listeners/property-creation.listener
     WalletService,
     FireblocksService,
     PropertyCreationListener,
+    RateService,
+    CoingeckoService,
     {
       provide: 'REDIS_CLIENT',
       inject: [ConfigService],
