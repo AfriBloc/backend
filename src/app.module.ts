@@ -83,8 +83,7 @@ import { CoingeckoService } from './services/coingecko.servic';
         migrations: ['dist/migrations/*{.ts,.js}'],
         logging: configService.get('env') === 'development' ? 'all' : ['error'],
         entities: [join(__dirname, '**/*.entity{.ts,.js}')],
-        sslmode:
-          configService.get('env') === 'development' ? 'disable' : 'require',
+        sslmode: 'require',
       }),
       inject: [ConfigService],
     }),
