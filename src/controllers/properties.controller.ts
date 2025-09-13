@@ -42,7 +42,6 @@ export class PropertiesController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   async list() {
     return { data: await this.propertiesService.list() };
   }
