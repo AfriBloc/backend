@@ -59,7 +59,13 @@ import { WalletController } from './controllers/wallet.controller';
 import { PropertyCreationListener } from './listeners/property-creation.listener';
 import { RateController } from './controllers/rate.controller';
 import { RateService } from './services/rate.service';
-import { CoingeckoService } from './services/coingecko.servic';
+import { CoingeckoService } from './services/coingecko.service';
+import { Transaction } from './entities/transaction.entity';
+import { TransactionService } from './services/transaction.service';
+import { TransactionReferenceService } from './services/transaction-reference.service';
+import { PropertyActivityListener } from './listeners/property-activity.listener';
+import { PortfolioItemService } from './services/portfolio-item.service';
+import { PortfolioController } from './controllers/portfolio.controller';
 
 @Module({
   imports: [
@@ -118,6 +124,7 @@ import { CoingeckoService } from './services/coingecko.servic';
       PortfolioItem,
       SubProperty,
       UserWallet,
+      Transaction,
     ]),
     PassportModule,
     JwtModule.registerAsync({
@@ -138,6 +145,7 @@ import { CoingeckoService } from './services/coingecko.servic';
     PropertiesController,
     WalletController,
     RateController,
+    PortfolioController,
   ],
   providers: [
     AppService,
@@ -159,6 +167,10 @@ import { CoingeckoService } from './services/coingecko.servic';
     PropertyCreationListener,
     RateService,
     CoingeckoService,
+    TransactionService,
+    TransactionReferenceService,
+    PropertyActivityListener,
+    PortfolioItemService,
     {
       provide: 'REDIS_CLIENT',
       inject: [ConfigService],

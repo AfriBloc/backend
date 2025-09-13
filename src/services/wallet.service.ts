@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -7,18 +11,15 @@ import {
   Currency,
 } from '../entities/user-wallet.entity';
 import { User } from '../entities/user.entity';
-import { ConfigService } from '@nestjs/config';
 import { FireblocksService } from './fireblocks.service';
-import axios from 'axios';
+import { RateService } from './rate.service';
 
 @Injectable()
 export class WalletService {
   constructor(
     @InjectRepository(UserWallet)
     private readonly walletRepository: Repository<UserWallet>,
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    private readonly configService: ConfigService,
+    private readonly rateService: RateService,
     private readonly fireblocksService: FireblocksService,
   ) {}
 
@@ -56,46 +57,32 @@ export class WalletService {
     throw new Error(`Fireblocks API error: ${error.message}`);
   }
 
-  async getWalletBalance(walletId: string): Promise<number> {
+  async getWalletBalance(userId: string) {
     const wallet = await this.walletRepository.findOne({
-      where: { id: walletId },
+      where: { userId },
     });
     if (!wallet) {
       throw new NotFoundException('Wallet not found');
     }
 
     try {
-      // TODO: Implement Fireblocks balance check
-      // This is a placeholder for the actual balance check
-      return wallet.balance;
-    } catch (error) {
-      throw new Error(`Failed to get wallet balance: ${error.message}`);
-    }
-  }
+      const [hbarBalance, usdRate, ngnRate] = await Promise.all([
+        this.fireblocksService.getWalletBalance(wallet),
+        this.rateService.getRate('hedera-hashgraph', 'usd'),
+        this.rateService.getRate('hedera-hashgraph', 'ngn'),
+      ]);
 
-  async convertHbarToUsd(hbarAmount: number): Promise<number> {
-    try {
-      // TODO: Implement real-time rate fetching
-      const response = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=hedera-hashgraph&vs_currencies=usd`,
-      );
-      const rate = response.data['hedera-hashgraph'].usd;
-      return hbarAmount * rate;
-    } catch (error) {
-      throw new Error(`Failed to convert HBAR to USD: ${error.message}`);
-    }
-  }
+      const balance = Number(hbarBalance);
 
-  async convertUsdToNgn(usdAmount: number): Promise<number> {
-    try {
-      // TODO: Implement real-time forex rate fetching
-      const response = await axios.get(
-        `https://api.exchangerate-api.com/v4/latest/USD`,
-      );
-      const rate = response.data.rates.NGN;
-      return usdAmount * rate;
+      return {
+        hbar: balance,
+        usd: balance * Number(usdRate.rate),
+        ngn: balance * Number(ngnRate.rate),
+      };
     } catch (error) {
-      throw new Error(`Failed to convert USD to NGN: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Failed to get wallet balance: ${error.message}`,
+      );
     }
   }
 

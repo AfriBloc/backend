@@ -15,7 +15,7 @@ import {
   FIAT_CURRENCIES,
   GetQuoteRequestDto,
 } from 'src/dto/rate.dto';
-import { CoingeckoService } from './coingecko.servic';
+import { CoingeckoService } from './coingecko.service';
 
 @Injectable()
 export class RateService {
@@ -103,7 +103,7 @@ export class RateService {
       if (this.isCryptoToFiat(from, to)) {
         const pairMap = {
           'usd-coin': 'usdc',
-          'hedera-hashgraph': 'hedera',
+          'hedera-hashgraph': 'hbar',
           ngn: 'ngn',
           usd: 'usd',
         };
@@ -168,6 +168,7 @@ export class RateService {
       { from: 'hedera-hashgraph', to: 'usd' },
       { from: 'usd-coin', to: 'ngn' },
       { from: 'usd-coin', to: 'usd' },
+      { from: 'usd', to: 'ngn' },
     ];
 
     let successCount = 0;

@@ -7,6 +7,7 @@ import {
   Request,
   ValidationPipe,
   Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { RegisterUserDto } from '../dto/register-user.dto';
@@ -16,6 +17,8 @@ import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { User } from '../entities/user.entity';
 import { VerifyOtpDto } from 'src/dto/verify-otp.dto';
 import { GetOtpDto } from 'src/dto/get-otp.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { ChangePasswordDto } from 'src/dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -63,12 +66,24 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  async changePassword(
+    @Request() req: { user: User },
+    @Body(new ValidationPipe({ transform: true }))
+    changePasswordDto: ChangePasswordDto,
+  ) {
+    return await this.authService.changePassword(changePasswordDto, req.user);
+  }
+
   @Get('profile')
+  @UseGuards(JwtAuthGuard)
   getProfile(@Request() req: { user: User }) {
     return this.authService.getProfile(req.user);
   }
 
   @Put('profile')
+  @UseGuards(JwtAuthGuard)
   async updateProfile(
     @Request() req: { user: User },
     @Body() updateData: Partial<User>,

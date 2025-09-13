@@ -40,6 +40,9 @@ export default function configuration() {
       adminKey: process.env.FIREBLOCKS_ADMIN_KEY,
       adminId: process.env.FIREBLOCKS_ADMIN_ID,
     },
+    coingecko: {
+      apiKey: process.env.COIN_GECKO_API_KEY,
+    },
   };
 }
 

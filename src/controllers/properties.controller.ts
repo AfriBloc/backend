@@ -8,6 +8,7 @@ import {
   UseInterceptors,
   BadRequestException,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { PropertiesService } from '../services/properties.service';
@@ -20,6 +21,7 @@ import {
 } from '../dto/create-property.dto';
 import { Property } from '../entities/property.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { PurchasePropertyDto } from 'src/dto/purchase-property.dto';
 
 function hasUrl(obj: unknown): obj is { url: string } {
   return (
@@ -220,5 +222,21 @@ export class PropertiesController {
       results.push(created);
     }
     return results;
+  }
+
+  @Post('purchase')
+  @UseGuards(JwtAuthGuard)
+  async purchasePropertyUnits(
+    @Body() dto: PurchasePropertyDto,
+    @Request() req,
+  ) {
+    const userId = req.user.id;
+
+    const result = await this.propertiesService.purchasePropertyUnits(
+      userId,
+      dto.propertyId,
+      dto.units,
+    );
+    return result;
   }
 }

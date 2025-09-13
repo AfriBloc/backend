@@ -1,13 +1,29 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Property } from '../entities/property.entity';
 import { PortfolioItem } from '../entities/property-portfolio-item.entity';
 import { CreatePropertyDto } from 'src/dto/create-property.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { FireblocksService } from './fireblocks.service';
+import { WalletService } from './wallet.service';
+import { RateService } from './rate.service';
+import {
+  Transaction,
+  TransactionStatus,
+  TransactionType,
+} from 'src/entities/transaction.entity';
+import { TransactionReferenceService } from './transaction-reference.service';
+import { Currency } from 'src/entities/user-wallet.entity';
 
 @Injectable()
 export class PropertiesService {
+  private readonly logger = new Logger(PropertiesService.name);
   constructor(
     @InjectRepository(Property)
     private readonly propertyRepo: Repository<Property>,
@@ -15,6 +31,10 @@ export class PropertiesService {
     private readonly portfolioRepo: Repository<PortfolioItem>,
     private readonly dataSource: DataSource,
     private readonly eventEmitter: EventEmitter2,
+    private readonly fireblocksService: FireblocksService,
+    private readonly walletService: WalletService,
+    private readonly rateService: RateService,
+    private readonly transactionRefService: TransactionReferenceService,
   ) {}
 
   async list(): Promise<Property[]> {
@@ -111,5 +131,142 @@ export class PropertiesService {
       mofFees: this.toMoneyString(mof),
       totalCost: this.toMoneyString(total),
     };
+  }
+
+  async purchasePropertyUnits(
+    userId: string,
+    propertyId: string,
+    numUnits: number,
+  ) {
+    return await this.dataSource.transaction(async (manager) => {
+      // 1. Fetch property
+      let property = await manager.findOne(Property, {
+        where: { id: propertyId },
+      });
+      if (!property) throw new NotFoundException('Property not found');
+
+      if (property.numUnits < numUnits) {
+        throw new BadRequestException('Not enough units available');
+      }
+
+      if (!property.tokenId) {
+        throw new BadRequestException('Property token not yet created');
+      }
+
+      // 2. Fetch user wallet
+      const userWallet = await this.walletService.getUserWallet(userId);
+      if (!userWallet?.walletAddress) {
+        throw new BadRequestException('User wallet not found');
+      }
+
+      // 3. Price calculations
+      const price = Number(property.pricePerUnit) * numUnits;
+      const totalPrice = Number(price.toFixed(2));
+      const hbarRate = await this.rateService.getRate(
+        'hedera-hashgraph',
+        'ngn',
+      );
+      if (!hbarRate?.rate || Number(hbarRate.rate) <= 0) {
+        throw new BadRequestException('Invalid HBAR/NGN rate');
+      }
+
+      const totalPriceInHbar = totalPrice / Number(hbarRate.rate);
+      const userBalance = await this.walletService.getWalletBalance(userId);
+      if (userBalance.hbar < totalPriceInHbar) {
+        throw new BadRequestException('Insufficient wallet balance');
+      }
+
+      this.logger.log(
+        `User ${userId} purchasing ${numUnits} units of property ${propertyId}`,
+      );
+      this.logger.log(
+        `Total price: ${totalPrice.toFixed()} NGN (${totalPriceInHbar.toFixed()} HBAR)`,
+      );
+
+      // 4. Associate token (ignore already-associated error)
+      const portfolioItem = await this.portfolioRepo.findOne({
+        where: { userId, propertyId },
+        relations: ['property'],
+      });
+
+      if (!portfolioItem) {
+        try {
+          const associationStatus =
+            await this.fireblocksService.associateTokenWithVault(
+              userWallet.vaultId,
+              userWallet.walletAddress,
+              property.tokenId,
+            );
+          this.logger.log(
+            `Token association: ${JSON.stringify(associationStatus)}`,
+          );
+        } catch (err) {
+          if (!err.message.includes('TOKEN_ALREADY_ASSOCIATED')) {
+            throw err;
+          }
+          this.logger.warn(
+            `Token already associated for ${userWallet.walletAddress}`,
+          );
+        }
+      }
+
+      // ✅ 5. Create a transaction leg BEFORE transfer
+      const reference = this.transactionRefService.generate();
+      let transactionLeg = manager.create(Transaction, {
+        userId,
+        walletType: userWallet.walletType,
+        transactionType: TransactionType.DEBIT,
+        status: TransactionStatus.PENDING,
+        amount: totalPriceInHbar.toFixed(8),
+        reference,
+        currency: Currency.HBAR,
+        address: userWallet.walletAddress,
+        network: userWallet.networkType,
+        spotPrice: Number(hbarRate.rate),
+        description: `Purchase of ${numUnits} units of property ${propertyId}`,
+      });
+      await manager.save(transactionLeg);
+
+      try {
+        // 6. Perform Fireblocks transfer
+        const transferResult = await this.fireblocksService.grantAndTransfer(
+          userWallet.walletAddress,
+          userWallet.vaultId,
+          property.tokenId,
+          Number(totalPriceInHbar),
+          transactionLeg,
+          numUnits,
+        );
+
+        // Update transaction leg with Fireblocks details
+        transactionLeg.status = TransactionStatus.SUCCESS;
+        transactionLeg.fireblockTransactionId =
+          transferResult?.transactionId ?? null;
+        transactionLeg.hash = transferResult?.transactionHash ?? null;
+        transactionLeg = await manager.save(transactionLeg);
+
+        // 7. Update property state (e.g., reduce available units)
+        property.numUnits -= numUnits;
+        property = await manager.save(property);
+
+        this.eventEmitter.emit('property.sold', {
+          property,
+          userId,
+          numUnits,
+          totalPrice,
+        });
+
+        this.logger.log(`Transfer result: ${JSON.stringify(transferResult)}`);
+        return {
+          message: 'Purchase successful',
+          transaction: transactionLeg,
+        };
+      } catch (error) {
+        // mark as failed if transfer fails
+        transactionLeg.status = TransactionStatus.FAILED;
+        await manager.save(transactionLeg);
+        throw error;
+      }
+    });
   }
 }

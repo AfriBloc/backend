@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { OnEvent } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Property } from 'src/entities/property.entity';
 import { FireblocksService } from 'src/services/fireblocks.service';
@@ -10,7 +10,6 @@ export class PropertyCreationListener {
   private readonly logger = new Logger(PropertyCreationListener.name);
 
   constructor(
-    private readonly eventEmitter: EventEmitter2,
     private readonly fireblocksService: FireblocksService,
     @InjectRepository(Property)
     private readonly propertyRepo: Repository<Property>,

@@ -20,6 +20,7 @@ import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { OtpService } from './otp.service';
 import { MailService } from './mail.service';
+import { ChangePasswordDto } from 'src/dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -267,6 +268,39 @@ export class AuthService {
         throw error;
       }
       throw new BadRequestException('Failed to verify code. Please try again.');
+    }
+
+    // Hash new password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update user password and clear reset request
+    user.password = hashedPassword;
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    await this.userRepository.save(user);
+
+    return {
+      message: 'Password reset successfully',
+    };
+  }
+
+  async changePassword(changePasswordDto: ChangePasswordDto, user: User) {
+    const { newPassword, oldPassword } = changePasswordDto;
+
+    // Find user by id
+    const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    // Check if passwords match
+    if (!isOldPasswordValid) {
+      throw new BadRequestException('Old password is incorrect');
+    }
+
+    // Check if new password is different from old password
+    if (oldPassword === newPassword) {
+      throw new BadRequestException(
+        'New password must be different from old password',
+      );
     }
 
     // Hash new password

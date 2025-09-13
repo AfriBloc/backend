@@ -87,7 +87,7 @@ export function isValidRatePair(from: string, to: string): boolean {
   const fromIsCrypto = CRYPTO_ASSETS.includes(from as CryptoAsset);
   const toIsCrypto = CRYPTO_ASSETS.includes(to as CryptoAsset);
 
-  if (!fromIsCrypto || toIsCrypto) {
+  if (!fromIsCrypto || (toIsCrypto && to !== 'usd')) {
     return false;
   }
 
