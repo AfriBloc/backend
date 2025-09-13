@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wallet Created</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    "
+  >
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding: 20px 0">
+      <tr>
+        <td align="center">
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              background-color: #ffffff;
+              border-radius: 12px;
+              overflow: hidden;
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            "
+          >
+            <!-- Header -->
+            <tr>
+              <td align="center" style="padding: 20px">
+                <img
+                  src="https://ik.imagekit.io/zyqdqinsh/Asset%209%20(1)%201%20(1).png?updatedAt=1757770004066"
+                  alt="AfriBloc"
+                  width="100"
+                />
+              </td>
+            </tr>
+
+            <!-- Title -->
+            <tr>
+              <td align="center" style="padding: 10px 20px">
+                <h2 style="margin: 0; font-size: 22px; color: #333">
+                  Your Wallet is Ready 🎉
+                </h2>
+              </td>
+            </tr>
+
+            <!-- Message -->
+            <tr>
+              <td
+                align="center"
+                style="
+                  padding: 0 30px 20px 30px;
+                  font-size: 14px;
+                  line-height: 1.6;
+                  color: #555;
+                "
+              >
+                Hello <%= firstName %>,<br /><br />
+                Great news! Your wallet has been successfully created and is
+                ready for use. You can now receive dividends, make purchases,
+                and participate in investments securely on Afribloc.
+              </td>
+            </tr>
+
+            <!-- Wallet Details Card -->
+            <tr>
+              <td align="center" style="padding: 10px 20px 20px 20px">
+                <table
+                  width="90%"
+                  cellpadding="10"
+                  cellspacing="0"
+                  style="
+                    border: 1px solid #ddd;
+                    border-radius: 10px;
+                    background-color: #fafafa;
+                    font-size: 12px;
+                  "
+                >
+                  <tr>
+                    <td style="text-align: left">
+                      <strong>Address:</strong>
+                    </td>
+                    <td style="text-align: right"><%= wallet.walletAddress %></td>
+                  </tr>
+
+                  <tr>
+                    <td style="text-align: left">
+                      <strong>EVM Address:</strong>
+                    </td>
+                    <td style="text-align: right"><%= wallet.evmAddress %></td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: left"><strong>Status:</strong></td>
+                    <td style="text-align: right; color: green">Active</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- CTA Button -->
+            <tr>
+              <td align="center" style="padding: 20px 20px 70px">
+                <a
+                  href="https://www.afribloc.co/"
+                  style="
+                    background-color: #7a3eff;
+                    color: #fff;
+                    text-decoration: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    display: inline-block;
+                  "
+                >
+                  Go to Dashboard
+                </a>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="background-color:#ffffff; padding:20px; border-top:1px solid #eee;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <!-- Left Column -->
+                    <td valign="top" style="text-align:left; font-size:12px; color:#333; line-height:1.4;">
+                      <img src="https://ik.imagekit.io/zyqdqinsh/Asset%209%20(1)%201%20(1).png?updatedAt=1757770004066" alt="AfriBloc" width="80" /><br/><br/>
+                      AfriBloc is a Global access to Africa&#39;s prime real estate. Start from $25 to own a bloc, earn monthly dividends, and share in capital appreciation at exit.<br/><br/>
+                      <img src="https://ik.imagekit.io/zyqdqinsh/partnership.png?updatedAt=1757771485382" alt="Powered by Hedera" width="100" />
+                    </td>
+
+                    <!-- Right Column (Contact + Social) -->
+                    <td valign="top" style="text-align:right; font-size:12px; color:#333;">
+                      <strong>Contact</strong><br/>
+                      <a href="mailto:contact@afribloc.co" style="color:#333; text-decoration:none;">contact@afribloc.co</a><br/><br/>
+                      <!-- Grey monochrome social icons -->
+                      <a href="#" style="text-decoration:none;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1384/1384031.png" width="20" style="filter: grayscale(100%); opacity: 0.7; margin-right:5px;"/>
+                      </a>
+                      <a href="#" style="text-decoration:none;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1384/1384015.png" width="20" style="filter: grayscale(100%); opacity: 0.7; margin-right:5px;"/>
+                      </a>
+                      <a href="#" style="text-decoration:none;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/1384/1384017.png" width="20" style="filter: grayscale(100%); opacity: 0.7;"/>
+                      </a>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="2" style="font-size:10px; color:#777; padding-top:20px; text-align:center; line-height:1.4;">
+                      Issuer incorporated in the British Virgin Islands. AfriBloc is not currently licensed by the BVI Financial Services Commission. 
+                      Materials are informational only and not an offer. Any future offering will be made via licensed partners or under valid exemptions, and may be geo-fenced and restricted to whitelisted investors.<br/><br/>
+                      Copyright © AfriBloc. All rights reserved.
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      
+    </table>
+  </body>
+</html>

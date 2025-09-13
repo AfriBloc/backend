@@ -2,12 +2,14 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>OTP Verification</title>
+    <title>Purchase Confirmation</title>
   </head>
   <body style="margin:0; padding:0; background-color:#f9f9f9; font-family: Arial, Helvetica, sans-serif;">
+    <% include('currency_formatter') %>
     <table width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center">
+          <!-- Main Card -->
           <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; margin: 20px auto; border-radius:8px; overflow:hidden;">
             <!-- Logo -->
             <tr>
@@ -18,30 +20,47 @@
             <!-- Title -->
             <tr>
               <td align="center" style="font-size: 22px; font-weight: 700; color: #000000; padding: 0 20px;">
-                Your One-Time Password (OTP)
+                Purchase Confirmation
               </td>
             </tr>
             <!-- Body -->
             <tr>
               <td align="center" style="padding: 20px 40px; font-size: 14px; color:#333333; line-height:1.6;">
-                Hi <%= email %>,<br/>
-                Use the 6-digit code below to verify your AfriBloc account.
+                Hi <%= firstName %>,<br/><br/>
+                You have successfully purchased <strong><%= numUnits %> <%= numUnits > 1 ? 'units' : 'unit' %></strong>
+ of the property below.
               </td>
             </tr>
-            <!-- OTP Boxes -->
+            <!-- Property Card -->
             <tr>
-              <td align="center" style="padding: 20px 20px 100px;">
-                <table cellpadding="0" cellspacing="0">
+              <td align="center" style="padding: 20px;">
+                <table cellpadding="0" cellspacing="0" style="border:1px solid #eee; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.1);">
                   <tr>
-                    <% otp.forEach(function(digit, i){ %>
-                      <td style="border: 1px solid #ccc; font-size: 20px; font-weight: bold; color:#000000; text-align:center; width:40px; height:50px; border-radius:4px;"><%= digit %></td>
-                      <% if (i !== otp.length - 1) { %><td width="10"></td><% } %>
-                    <% }); %>
+                    <td>
+                      <img src="<%= property.imageUrls[0] %>" alt="Property Image" width="250" height="250" style="border-radius:6px 6px 0 0; display:block;" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:10px; font-size: 14px; font-weight:bold; color:#000000;">
+                      <%= property.title %>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:0 10px 10px 10px; font-size: 12px; color:#666666;">
+                      <%= property.location %>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0 10px 10px 10px; font-size: 13px; color:#000000;">
+                      Amount Paid: <strong><%= formatCurrency(totalPrice, 'NGN') %></strong> <br/>
+                      Equivalent in HBAR: <strong><%= transaction.amount %> ℏ</strong>
+                    </td>
                   </tr>
                 </table>
               </td>
             </tr>
 
+            <!-- Footer Section -->
             <tr>
               <td style="background-color:#ffffff; padding:20px; border-top:1px solid #eee;">
                 <table width="100%" cellpadding="0" cellspacing="0">
@@ -81,9 +100,6 @@
               </td>
             </tr>
           </table>
-
-
-
         </td>
       </tr>
     </table>

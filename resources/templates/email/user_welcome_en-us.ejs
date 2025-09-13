@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>OTP Verification</title>
+    <title>Welcome to AfriBloc</title>
   </head>
   <body style="margin:0; padding:0; background-color:#f9f9f9; font-family: Arial, Helvetica, sans-serif;">
     <table width="100%" cellpadding="0" cellspacing="0">
@@ -18,27 +18,20 @@
             <!-- Title -->
             <tr>
               <td align="center" style="font-size: 22px; font-weight: 700; color: #000000; padding: 0 20px;">
-                Your One-Time Password (OTP)
+                Welcome to AfriBloc, <%= firstName %>
               </td>
             </tr>
             <!-- Body -->
             <tr>
               <td align="center" style="padding: 20px 40px; font-size: 14px; color:#333333; line-height:1.6;">
-                Hi <%= email %>,<br/>
-                Use the 6-digit code below to verify your AfriBloc account.
+                You&#39;ve successfully joined AfriBloc! 🎉<br/>
+                Start exploring opportunities to own fractional real estate<br>earn monthly dividends, and benefit from long-term appreciation.
               </td>
             </tr>
-            <!-- OTP Boxes -->
+            <!-- CTA -->
             <tr>
-              <td align="center" style="padding: 20px 20px 100px;">
-                <table cellpadding="0" cellspacing="0">
-                  <tr>
-                    <% otp.forEach(function(digit, i){ %>
-                      <td style="border: 1px solid #ccc; font-size: 20px; font-weight: bold; color:#000000; text-align:center; width:40px; height:50px; border-radius:4px;"><%= digit %></td>
-                      <% if (i !== otp.length - 1) { %><td width="10"></td><% } %>
-                    <% }); %>
-                  </tr>
-                </table>
+              <td align="center" style="padding: 30px 30px 100px;">
+                <a href="https://www.afribloc.co/login" style="background-color:#9E4BF1; color:#ffffff; padding:12px 30px; font-size:14px; text-decoration:none; border-radius:6px; display:inline-block;">Explore Properties</a>
               </td>
             </tr>
 
@@ -81,7 +74,6 @@
               </td>
             </tr>
           </table>
-
 
 
         </td>

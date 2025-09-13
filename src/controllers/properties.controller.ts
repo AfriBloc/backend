@@ -230,10 +230,10 @@ export class PropertiesController {
     @Body() dto: PurchasePropertyDto,
     @Request() req,
   ) {
-    const userId = req.user.id;
+    const user = req.user;
 
     const result = await this.propertiesService.purchasePropertyUnits(
-      userId,
+      user,
       dto.propertyId,
       dto.units,
     );

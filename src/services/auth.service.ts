@@ -130,6 +130,8 @@ export class AuthService {
     // Return user data without password
     const { password: _, ...userWithoutPassword } = savedUser;
 
+    this.mail.sendUserWelcome(user);
+
     return {
       message: 'User registered successfully',
       user: userWithoutPassword,

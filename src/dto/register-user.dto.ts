@@ -26,7 +26,7 @@ export class RegisterUserDto {
   @Matches(/^[a-zA-Z]+$/, {
     message: 'Lastname must contain only letters and no spaces',
   })
-  @Transform(({ value }) => value?.toLowerCase().trim())
+  @Transform(({ value }) => value?.trim())
   lastName: string;
 
   @IsEmail({}, { message: 'Please provide a valid email address' })

@@ -6,6 +6,7 @@ import { KycApprovedEvent } from '../events/kyc-approved.event';
 import { User } from '../entities/user.entity';
 import { WalletService } from 'src/services/wallet.service';
 import { WalletType } from 'src/entities/user-wallet.entity';
+import { MailService } from 'src/services/mail.service';
 
 @Injectable()
 export class KycWalletCreationListener {
@@ -16,6 +17,7 @@ export class KycWalletCreationListener {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly walletService: WalletService,
+    private readonly mailService: MailService,
   ) {}
 
   @OnEvent('kyc.approved')
@@ -44,6 +46,7 @@ export class KycWalletCreationListener {
         `wallet created for user ${event.userId}: ${hederaWallet.walletAddress}`,
       );
 
+      this.mailService.sendWalletCreatedEmail(hederaWallet, user);
       // Emit wallet created event for WebSocket notification
       this.eventEmitter.emit('wallet.created', {
         userId: event.userId,

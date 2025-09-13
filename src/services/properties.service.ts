@@ -20,6 +20,8 @@ import {
 } from 'src/entities/transaction.entity';
 import { TransactionReferenceService } from './transaction-reference.service';
 import { Currency } from 'src/entities/user-wallet.entity';
+import { MailService } from './mail.service';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class PropertiesService {
@@ -34,6 +36,7 @@ export class PropertiesService {
     private readonly fireblocksService: FireblocksService,
     private readonly walletService: WalletService,
     private readonly rateService: RateService,
+    private readonly mailService: MailService,
     private readonly transactionRefService: TransactionReferenceService,
   ) {}
 
@@ -134,7 +137,7 @@ export class PropertiesService {
   }
 
   async purchasePropertyUnits(
-    userId: string,
+    user: User,
     propertyId: string,
     numUnits: number,
   ) {
@@ -154,7 +157,7 @@ export class PropertiesService {
       }
 
       // 2. Fetch user wallet
-      const userWallet = await this.walletService.getUserWallet(userId);
+      const userWallet = await this.walletService.getUserWallet(user.id);
       if (!userWallet?.walletAddress) {
         throw new BadRequestException('User wallet not found');
       }
@@ -171,13 +174,13 @@ export class PropertiesService {
       }
 
       const totalPriceInHbar = totalPrice / Number(hbarRate.rate);
-      const userBalance = await this.walletService.getWalletBalance(userId);
+      const userBalance = await this.walletService.getWalletBalance(user.id);
       if (userBalance.hbar < totalPriceInHbar) {
         throw new BadRequestException('Insufficient wallet balance');
       }
 
       this.logger.log(
-        `User ${userId} purchasing ${numUnits} units of property ${propertyId}`,
+        `User ${user.id} purchasing ${numUnits} units of property ${propertyId}`,
       );
       this.logger.log(
         `Total price: ${totalPrice.toFixed()} NGN (${totalPriceInHbar.toFixed()} HBAR)`,
@@ -185,7 +188,7 @@ export class PropertiesService {
 
       // 4. Associate token (ignore already-associated error)
       const portfolioItem = await this.portfolioRepo.findOne({
-        where: { userId, propertyId },
+        where: { userId: user.id, propertyId },
         relations: ['property'],
       });
 
@@ -213,7 +216,7 @@ export class PropertiesService {
       // ✅ 5. Create a transaction leg BEFORE transfer
       const reference = this.transactionRefService.generate();
       let transactionLeg = manager.create(Transaction, {
-        userId,
+        userId: user.id,
         walletType: userWallet.walletType,
         transactionType: TransactionType.DEBIT,
         status: TransactionStatus.PENDING,
@@ -251,10 +254,18 @@ export class PropertiesService {
 
         this.eventEmitter.emit('property.sold', {
           property,
-          userId,
+          userId: user.id,
           numUnits,
           totalPrice,
         });
+
+        this.mailService.sendPropertyPurchasedEmail(
+          transactionLeg,
+          property,
+          user,
+          totalPrice,
+          numUnits,
+        );
 
         this.logger.log(`Transfer result: ${JSON.stringify(transferResult)}`);
         return {

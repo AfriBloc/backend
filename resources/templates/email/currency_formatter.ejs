@@ -1,0 +1,50 @@
+<%
+formatCurrency = function (
+  amount,
+  currency = 'USD',
+  locale = 'en-US',
+) {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
+
+ formatCrypto = function(
+  amount,
+  currency = 'USDT',
+  options= {},
+) {
+  const {
+    minimumFractionDigits = 2,
+    maximumFractionDigits = 6,
+    notation = 'standard',
+    minimumSignificantDigits,
+    showCurrency = true,
+  } = options;
+
+  const formattedNumber = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits,
+    maximumFractionDigits,
+    notation,
+    minimumSignificantDigits,
+  }).format(amount);
+
+  const isInteger = amount === Math.floor(amount);
+  const finalNumber = isInteger
+    ? new Intl.NumberFormat('en-US', {
+        notation,
+        minimumSignificantDigits,
+      }).format(amount)
+    : formattedNumber;
+
+  if (amount !== 0 && Math.abs(amount) < Math.pow(10, -maximumFractionDigits)) {
+    return `<${amount > 0 ? '' : '-'}0.${Array(maximumFractionDigits).join('0')}1 ${currency}`;
+  }
+
+  return showCurrency ? `${finalNumber} ${currency}` : finalNumber;
+}
+%>
