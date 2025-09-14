@@ -237,9 +237,12 @@ export class KycService {
     user.kycCompletedAt = new Date();
 
     // Update personal information from KYC data
-    if (personalInfo.firstName) user.firstName = personalInfo.firstName;
-    if (personalInfo.lastName) user.lastName = personalInfo.lastName;
-    if (personalInfo.middleName) user.middleName = personalInfo.middleName;
+    if (personalInfo.firstName && !user.firstName)
+      user.firstName = personalInfo.firstName;
+    if (personalInfo.lastName && !user.lastName)
+      user.lastName = personalInfo.lastName;
+    if (personalInfo.middleName && !user.middleName)
+      user.middleName = personalInfo.middleName;
     if (personalInfo.dateOfBirth) user.dateOfBirth = personalInfo.dateOfBirth;
     if (personalInfo.gender) user.gender = personalInfo.gender;
     if (personalInfo.nationality) user.nationality = personalInfo.nationality;
