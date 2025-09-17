@@ -244,6 +244,7 @@ export class KycService {
     if (personalInfo.middleName && !user.middleName)
       user.middleName = personalInfo.middleName;
     if (personalInfo.dateOfBirth) user.dateOfBirth = personalInfo.dateOfBirth;
+    if (personalInfo.phone_number) user.phoneNumber = personalInfo.phone_number;
     if (personalInfo.gender) user.gender = personalInfo.gender;
     if (personalInfo.nationality) user.nationality = personalInfo.nationality;
     if (personalInfo.placeOfBirth)
