@@ -12,6 +12,8 @@ export class PropertyActivityListener {
   constructor(
     @InjectRepository(PortfolioItem)
     private readonly portfolioItemRepo: Repository<PortfolioItem>,
+    @InjectRepository(Property)
+    private readonly propertyRepo: Repository<Property>,
   ) {}
 
   @OnEvent('property.sold')
@@ -42,6 +44,9 @@ export class PropertyActivityListener {
           unitsOwned: event.numUnits,
           totalInvested: event.totalPrice.toString(),
         });
+
+        event.property.investorsCount += 1;
+        await this.propertyRepo.save(event.property);
       }
 
       return portfolioItem;

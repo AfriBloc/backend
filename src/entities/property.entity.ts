@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { PortfolioItem } from './property-portfolio-item.entity';
 // import { SubProperty } from './sub-property.entity';
-import { Expose } from 'class-transformer';
 import { Currency } from './user-wallet.entity';
 
 @Entity('properties')
@@ -73,21 +72,14 @@ export class Property {
   @Column({ name: 'total_cost', type: 'numeric', precision: 18, scale: 2 })
   listingPrice: string;
 
-  // Computed: number of unique investors (users with portfolio items for this property)
-  @Expose()
-  get investorsCount(): number {
-    return Array.isArray(this.portfolioItems) ? this.portfolioItems.length : 0;
-  }
+  @Column({ name: 'initial_units', type: 'int', default: 0 })
+  initialUnits: number;
 
-  // Computed: total number of units sold (sum of unitsOwned in all portfolio items)
-  @Expose()
-  get unitsSold(): number {
-    if (!Array.isArray(this.portfolioItems)) return 0;
-    return this.portfolioItems.reduce(
-      (sum, item) => sum + (item.unitsOwned || 0),
-      0,
-    );
-  }
+  @Column({ name: 'investors_count', type: 'int', default: 0 })
+  investorsCount: number;
+
+  @Column({ name: 'units_sold', type: 'int', default: 0 })
+  unitsSold: number;
 
   // Yields and ROI
   @Column({
