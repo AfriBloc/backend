@@ -41,27 +41,7 @@ export class PropertiesService {
   ) {}
 
   async list(): Promise<Property[]> {
-    const properties = await this.propertyRepo.find({
-      relations: ['portfolioItems'],
-    });
-
-    for (const property of properties) {
-      // Calculate investorsCount and unitsSold
-      const investorsCount = property.portfolioItems.length;
-      const unitsSold = property.portfolioItems.reduce(
-        (sum, item) => sum + (item.unitsOwned || 0),
-        0,
-      );
-      const initialUnits = unitsSold + property.numUnits;
-
-      // Update property object
-      property.investorsCount = investorsCount;
-      property.unitsSold = unitsSold;
-      property.initialUnits = initialUnits;
-
-      // Save back to DB
-      await this.propertyRepo.save(property);
-    }
+    const properties = await this.propertyRepo.find();
 
     return properties;
   }
