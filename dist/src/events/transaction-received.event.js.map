@@ -1,0 +1,1 @@
+{"version":3,"file":"transaction-received.event.js","sourceRoot":"","sources":["../../../src/events/transaction-received.event.ts"],"names":[],"mappings":";;;AAAA,MAAa,wBAAwB;IAEjB;IACA;IACA;IACA;IAJlB,YACkB,MAAc,EACd,aAAqB,EACrB,MAAc,EACd,UAAkB;QAHlB,WAAM,GAAN,MAAM,CAAQ;QACd,kBAAa,GAAb,aAAa,CAAQ;QACrB,WAAM,GAAN,MAAM,CAAQ;QACd,eAAU,GAAV,UAAU,CAAQ;IACjC,CAAC;CACL;AAPD,4DAOC"}

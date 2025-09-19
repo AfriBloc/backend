@@ -1,0 +1,31 @@
+import { KycStatus } from '../enums/kyc-status.enum';
+import { Verification } from './verification.entity';
+import { KycApplicant } from './kyc-applicant.entity';
+import { KycWebhookEvent } from './kyc-webhook-event.entity';
+import { UserWallet } from './user-wallet.entity';
+export declare class User {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    emailVerifiedAt: Date | null;
+    phoneVerifiedAt: Date | null;
+    passwordResetToken: string | null;
+    passwordResetExpires: Date | null;
+    middleName: string | null;
+    dateOfBirth: Date | null;
+    gender: 'M' | 'F' | 'X' | null;
+    nationality: string | null;
+    placeOfBirth: string | null;
+    kycStatus: KycStatus;
+    kycApplicantId: string | null;
+    kycCompletedAt: Date | null;
+    verifications: Verification[];
+    kycApplicants: KycApplicant[];
+    kycWebhookEvents: KycWebhookEvent[];
+    wallets: UserWallet[];
+    createdAt: Date;
+    updatedAt: Date;
+}

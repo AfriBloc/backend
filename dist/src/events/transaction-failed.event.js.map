@@ -1,0 +1,1 @@
+{"version":3,"file":"transaction-failed.event.js","sourceRoot":"","sources":["../../../src/events/transaction-failed.event.ts"],"names":[],"mappings":";;;AAAA,MAAa,sBAAsB;IAEf;IACA;IACA;IACA;IAJlB,YACkB,MAAc,EACd,aAAqB,EACrB,MAAc,EACd,UAAkB;QAHlB,WAAM,GAAN,MAAM,CAAQ;QACd,kBAAa,GAAb,aAAa,CAAQ;QACrB,WAAM,GAAN,MAAM,CAAQ;QACd,eAAU,GAAV,UAAU,CAAQ;IACjC,CAAC;CACL;AAPD,wDAOC"}
